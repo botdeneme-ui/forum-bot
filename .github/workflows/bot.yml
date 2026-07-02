@@ -16,6 +16,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Google Chrome kur
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Chrome sürümünü kontrol et
+        run: chrome --version
+
       - name: Kütüphaneleri yükle
         run: pip install -r requirements.txt
 
