@@ -1,30 +1,26 @@
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 URL = "https://forum.donanimarsivi.com/forumlar/Sicakfirsatlar/"
 
-headers = {
-    "User-Agent": "Mozilla/5.0"
-}
+options = Options()
+options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 
-response = requests.get(URL, headers=headers, timeout=20)
-response.raise_for_status()
+driver = webdriver.Chrome(options=options)
 
-soup = BeautifulSoup(response.text, "html.parser")
+try:
+    driver.get(URL)
 
-basliklar = soup.select(".structItem-title a")
+    basliklar = driver.find_elements(By.CSS_SELECTOR, ".structItem-title a")
 
-if not basliklar:
-    print("Konu bulunamadı.")
-    exit()
+    print("Bulunan konular:")
+    print("-" * 40)
 
-ilk_konu = basliklar[0]
+    for i, baslik in enumerate(basliklar[:10], start=1):
+        print(f"{i}. {baslik.text}")
 
-print("Başlık :", ilk_konu.get_text(strip=True))
-
-link = ilk_konu.get("href", "")
-
-if link.startswith("/"):
-    link = "https://forum.donanimarsivi.com" + link
-
-print("Link    :", link)
+finally:
+    driver.quit()
