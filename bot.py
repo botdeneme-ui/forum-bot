@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+import time
 
 URL = "https://forum.donanimarsivi.com/forumlar/Sicakfirsatlar/"
 
@@ -14,13 +15,14 @@ driver = webdriver.Chrome(options=options)
 try:
     driver.get(URL)
 
-    basliklar = driver.find_elements(By.CSS_SELECTOR, ".structItem-title a")
+    time.sleep(5)
 
-    print("Bulunan konular:")
-    print("-" * 40)
+    print("Sayfa başlığı:")
+    print(driver.title)
 
-    for i, baslik in enumerate(basliklar[:10], start=1):
-        print(f"{i}. {baslik.text}")
+    print("-------------------")
+
+    print(driver.page_source[:3000])
 
 finally:
     driver.quit()
