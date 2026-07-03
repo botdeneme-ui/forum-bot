@@ -23,36 +23,39 @@ soup = BeautifulSoup(response.text, "html.parser")
 
 konular = soup.select(".structItem--thread")
 
-hedef_baslik = None
+import re
+
+en_buyuk_id = -1
 hedef_link = None
+hedef_baslik = None
 
 for konu in konular:
 
-    # Başlık bölümündeki bütün a etiketlerini al
-    linkler = konu.select(".structItem-title a")
-
-    # Gerçek konu linkini bul
-    for a in linkler:
+    for a in konu.select(".structItem-title a"):
 
         href = a.get("href", "")
 
-        if href.startswith("/konu/"):
+        if not href.startswith("/konu/"):
+            continue
 
+        eslesme = re.search(r"\.(\d+)/?$", href)
+
+        if not eslesme:
+            continue
+
+        konu_id = int(eslesme.group(1))
+
+        if konu_id > en_buyuk_id:
+            en_buyuk_id = konu_id
             hedef_link = BASE_URL + href
             hedef_baslik = a.get_text(" ", strip=True)
 
-            break
-
-    # İlk gerçek konu bulundu
-    if hedef_link:
-        break
-
 if hedef_link is None:
-    raise Exception("Gerçek konu bulunamadı.")
+    raise Exception("Konu bulunamadı.")
 
 print("Takip edilen konu:")
 print(hedef_baslik)
-print(hedef_link)
+print("Konu ID:", en_buyuk_id)
 
 eski = ""
 
