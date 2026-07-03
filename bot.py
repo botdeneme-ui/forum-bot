@@ -1,28 +1,21 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-import time
+import requests
+from bs4 import BeautifulSoup
 
 URL = "https://forum.donanimarsivi.com/forumlar/Sicakfirsatlar/"
 
-options = Options()
-options.add_argument("--headless=new")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
 
-driver = webdriver.Chrome(options=options)
+response = requests.get(URL, headers=headers)
 
-try:
-    driver.get(URL)
+print("Durum kodu:", response.status_code)
 
-    time.sleep(5)
+soup = BeautifulSoup(response.text, "html.parser")
 
-    print("Sayfa başlığı:")
-    print(driver.title)
+basliklar = soup.select(".structItem-title a")
 
-    print("-------------------")
+print("Bulunan başlık sayısı:", len(basliklar))
 
-    print(driver.page_source[:3000])
-
-finally:
-    driver.quit()
+for i, konu in enumerate(basliklar[:10], start=1):
+    print(f"{i}. {konu.get_text(strip=True)}")
