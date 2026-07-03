@@ -82,7 +82,8 @@ if eski == "":
         f.write(str(en_buyuk_id))
 
     exit()
-
+print("Eski ID :", eski)
+print("Yeni ID :", en_buyuk_id)
 # Yeni konu var mı?
 if eski != str(en_buyuk_id):
 
