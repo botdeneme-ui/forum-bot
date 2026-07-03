@@ -56,6 +56,7 @@ if hedef_link is None:
 print("Takip edilen konu:")
 print(hedef_baslik)
 print("Konu ID:", en_buyuk_id)
+print("Link:", hedef_link)
 
 eski = ""
 
