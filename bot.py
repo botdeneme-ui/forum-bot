@@ -69,8 +69,8 @@ if eski == "":
 
     print("İlk çalıştırma.")
 
-   with open(LAST_FILE, "w", encoding="utf-8") as f:
-    f.write(str(en_buyuk_id))
+    with open(LAST_FILE, "w", encoding="utf-8") as f:
+        f.write(str(en_buyuk_id))
 
     exit()
 
@@ -96,8 +96,8 @@ if eski != str(en_buyuk_id):
 
     print("Telegram bildirimi gönderildi.")
 
-   with open(LAST_FILE, "w", encoding="utf-8") as f:
-    f.write(str(en_buyuk_id))
+    with open(LAST_FILE, "w", encoding="utf-8") as f:
+        f.write(str(en_buyuk_id))
 
 else:
 
