@@ -22,6 +22,15 @@ response.raise_for_status()
 soup = BeautifulSoup(response.text, "html.parser")
 
 konular = soup.select(".structItem--thread")
+print("Bulunan konular:")
+
+for i, konu in enumerate(konular[:10], start=1):
+    try:
+        a = konu.select_one(".structItem-title a[href*='/konu/']")
+        if a:
+            print(i, a.text.strip(), a["href"])
+    except Exception as e:
+        print(e)
 
 import re
 
