@@ -3,29 +3,39 @@ import requests
 from bs4 import BeautifulSoup
 
 URL = "https://forum.donanimarsivi.com/forumlar/Sicakfirsatlar/"
+BASE_URL = "https://forum.donanimarsivi.com"
+
+BOT_TOKEN = os.environ["BOT_TOKEN"]
+CHAT_ID = os.environ["CHAT_ID"]
 
 headers = {
     "User-Agent": "Mozilla/5.0"
 }
 
-BOT_TOKEN = os.environ["BOT_TOKEN"]
-CHAT_ID = os.environ["CHAT_ID"]
-
-response = requests.get(URL, headers=headers)
+response = requests.get(URL, headers=headers, timeout=20)
 response.raise_for_status()
 
 soup = BeautifulSoup(response.text, "html.parser")
 
 konular = soup.select(".structItem--thread")
 
-if len(konular) < 5:
-    raise Exception("Yeterli konu bulunamadı.")
+ilk_normal = None
 
-# İlk 4 sabit konuyu geç
-konu = konular[4]
+for konu in konular:
+    # Sabit konuları atla
+    if "structItem--sticky" in konu.get("class", []):
+        continue
 
-baslik = konu.select_one(".structItem-title a").get_text(strip=True)
-link = "https://forum.donanimarsivi.com" + konu.select_one(".structItem-title a")["href"]
+    ilk_normal = konu
+    break
+
+if ilk_normal is None:
+    raise Exception("Normal konu bulunamadı.")
+
+link_eleman = ilk_normal.select_one(".structItem-title a")
+
+baslik = link_eleman.get_text(strip=True)
+link = BASE_URL + link_eleman["href"]
 
 print("Takip edilen konu:", baslik)
 
@@ -38,31 +48,33 @@ else:
     eski = ""
 
 if eski == "":
-    print("İlk çalıştırma.")
+    print("İlk çalıştırma")
     with open(DOSYA, "w", encoding="utf-8") as f:
-        f.write(baslik)
+        f.write(link)
 
-elif eski != baslik:
+elif eski != link:
 
-    mesaj = f"""🔥 Yeni Konu Açıldı!
+    mesaj = f"""🔥 Yeni Konu Açıldı
 
-{baslik}
+📝 {baslik}
 
-{link}
+🔗 {link}
 """
 
     requests.get(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
         params={
             "chat_id": CHAT_ID,
-            "text": mesaj
-        }
+            "text": mesaj,
+            "disable_web_page_preview": True
+        },
+        timeout=20
     )
 
     print("Telegram bildirimi gönderildi.")
 
     with open(DOSYA, "w", encoding="utf-8") as f:
-        f.write(baslik)
+        f.write(link)
 
 else:
     print("Yeni konu yok.")
