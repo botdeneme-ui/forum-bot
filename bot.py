@@ -93,17 +93,18 @@ if eski != str(en_buyuk_id):
 🔗 {hedef_link}
 """
 
-    requests.get(
-        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        params={
-            "chat_id": CHAT_ID,
-            "text": mesaj,
-            "disable_web_page_preview": True
-        },
-        timeout=20
-    )
+    r = requests.get(
+    f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+    params={
+        "chat_id": CHAT_ID,
+        "text": mesaj,
+        "disable_web_page_preview": True
+    },
+    timeout=20
+)
 
-    print("Telegram bildirimi gönderildi.")
+print("Telegram cevap kodu:", r.status_code)
+print(r.text)
 
     with open(LAST_FILE, "w", encoding="utf-8") as f:
         f.write(str(en_buyuk_id))
