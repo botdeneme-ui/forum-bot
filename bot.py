@@ -94,7 +94,7 @@ if eski != str(en_buyuk_id):
 🔗 {hedef_link}
 """
 
-    r = requests.get(
+r = requests.get(
     f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
     params={
         "chat_id": CHAT_ID,
@@ -107,9 +107,8 @@ if eski != str(en_buyuk_id):
 print("Telegram cevap kodu:", r.status_code)
 print(r.text)
 
-    with open(LAST_FILE, "w", encoding="utf-8") as f:
-        f.write(str(en_buyuk_id))
-
+with open(LAST_FILE, "w", encoding="utf-8") as f:
+    f.write(str(en_buyuk_id))
 else:
 
     print("Yeni konu yok.")
