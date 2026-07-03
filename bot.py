@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 from bs4 import BeautifulSoup
 
@@ -16,27 +17,32 @@ headers = {
     )
 }
 
+# Sayfayı indir
 response = requests.get(URL, headers=headers, timeout=20)
 response.raise_for_status()
 
 soup = BeautifulSoup(response.text, "html.parser")
 
+# Konuları bul
 konular = soup.select(".structItem--thread")
-print("Bulunan konular:")
+
+print("=" * 60)
+print("Bulunan konu sayısı:", len(konular))
+print("=" * 60)
 
 for i, konu in enumerate(konular[:10], start=1):
     try:
         a = konu.select_one(".structItem-title a[href*='/konu/']")
         if a:
-            print(i, a.text.strip(), a["href"])
+            print(f"{i}. {a.get_text(strip=True)}")
+            print("   ", a["href"])
     except Exception as e:
         print(e)
 
-import re
-
+# En büyük konu ID'sini bul
 en_buyuk_id = -1
-hedef_link = None
 hedef_baslik = None
+hedef_link = None
 
 for konu in konular:
 
@@ -56,17 +62,18 @@ for konu in konular:
 
         if konu_id > en_buyuk_id:
             en_buyuk_id = konu_id
-            hedef_link = BASE_URL + href
             hedef_baslik = a.get_text(" ", strip=True)
+            hedef_link = BASE_URL + href
 
 if hedef_link is None:
-    raise Exception("Konu bulunamadı.")
+    raise Exception("Hiç konu bulunamadı!")
 
-print("Takip edilen konu:")
-print(hedef_baslik)
-print("Konu ID:", en_buyuk_id)
-print("Link:", hedef_link)
+print("\nTakip edilen konu:")
+print("Başlık :", hedef_baslik)
+print("ID     :", en_buyuk_id)
+print("Link   :", hedef_link)
 
+# Eski ID oku
 eski = ""
 
 if os.path.exists(LAST_FILE):
@@ -75,17 +82,20 @@ if os.path.exists(LAST_FILE):
 
 # İlk çalıştırma
 if eski == "":
-
-    print("İlk çalıştırma.")
+    print("\nİlk çalıştırma.")
 
     with open(LAST_FILE, "w", encoding="utf-8") as f:
         f.write(str(en_buyuk_id))
 
     exit()
-print("Eski ID :", eski)
+
+print("\nEski ID :", eski)
 print("Yeni ID :", en_buyuk_id)
-# Yeni konu var mı?
+
+# Yeni konu kontrolü
 if eski != str(en_buyuk_id):
+
+    print("\n>>> YENİ KONU ALGILANDI <<<")
 
     mesaj = f"""🔥 Yeni Konu Açıldı!
 
@@ -94,21 +104,25 @@ if eski != str(en_buyuk_id):
 🔗 {hedef_link}
 """
 
-r = requests.get(
-    f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-    params={
-        "chat_id": CHAT_ID,
-        "text": mesaj,
-        "disable_web_page_preview": True
-    },
-    timeout=20
-)
+    r = requests.get(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        params={
+            "chat_id": CHAT_ID,
+            "text": mesaj,
+            "disable_web_page_preview": True
+        },
+        timeout=20
+    )
 
-print("Telegram cevap kodu:", r.status_code)
-print(r.text)
+    print("Telegram HTTP:", r.status_code)
+    print("Telegram Cevabı:")
+    print(r.text)
 
-with open(LAST_FILE, "w", encoding="utf-8") as f:
-    f.write(str(en_buyuk_id))
+    with open(LAST_FILE, "w", encoding="utf-8") as f:
+        f.write(str(en_buyuk_id))
+
+    print("last_topic.txt güncellendi.")
+
 else:
 
-    print("Yeni konu yok.")
+    print("\nYeni konu yok.")
