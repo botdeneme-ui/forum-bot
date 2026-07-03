@@ -8,9 +8,4 @@ soup = BeautifulSoup(r.text, "html.parser")
 
 konular = soup.select(".structItem--thread")
 
-for i, konu in enumerate(konular[:10], 1):
-    link = konu.select_one(".structItem-title a")
-
-    print("=" * 40)
-    print(i)
-    print(link["href"])
+print(konular[7].prettify())
