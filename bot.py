@@ -68,13 +68,13 @@ if eski == "":
 
     print("İlk çalıştırma.")
 
-    with open(LAST_FILE, "w", encoding="utf-8") as f:
-        f.write(hedef_link)
+   with open(LAST_FILE, "w", encoding="utf-8") as f:
+    f.write(str(en_buyuk_id))
 
     exit()
 
 # Yeni konu var mı?
-if eski != hedef_link:
+if eski != str(en_buyuk_id):
 
     mesaj = f"""🔥 Yeni Konu Açıldı!
 
@@ -95,8 +95,8 @@ if eski != hedef_link:
 
     print("Telegram bildirimi gönderildi.")
 
-    with open(LAST_FILE, "w", encoding="utf-8") as f:
-        f.write(hedef_link)
+   with open(LAST_FILE, "w", encoding="utf-8") as f:
+    f.write(str(en_buyuk_id))
 
 else:
 
