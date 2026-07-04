@@ -15,11 +15,9 @@ permissions:
 
 jobs:
   kontrol:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -27,6 +25,9 @@ jobs:
           python-version: "3.12"
 
       - run: pip install -r requirements.txt
+
+      - name: Çalışma zamanı
+        run: date
 
       - name: Botu çalıştır
         run: python bot.py
